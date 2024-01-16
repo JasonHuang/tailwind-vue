@@ -1,0 +1,26 @@
+{
+  "name": "vue-project",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build-watch": "npx tailwindcss -i ./src/assets/tailwind.css -o ./src/assets/output.css --watch",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "tailwindcss": "^3.4.1",
+    "volar-service-vetur": "^0.0.17",
+    "vue": "^3.3.11"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.2",
+    "vite": "^5.0.10"
+  },
+  "description": "This template should help get you started developing with Vue 3 in Vite.",
+  "main": "vite.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -27,3 +27,6 @@ npm run dev
 ```sh
 npm run build
 ```
+=======
+# tailwind-vue
+combine tailwind and vue to my project 

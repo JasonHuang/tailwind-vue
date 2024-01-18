@@ -247,4 +247,5 @@ export default {
 .fade-leave-active {
     transition: opacity 0.15s ease-in, transform 0.15s ease-in;
 }
+
 </style>

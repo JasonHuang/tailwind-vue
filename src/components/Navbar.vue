@@ -6,7 +6,8 @@
                     <span class="sr-only">TechQik Development</span>
                     <img class="h-7 w-auto" src="../assets/Logo.svg" alt="" />
                 </a>
-                <button type="button" id="menu-btn" class="block hamburger lg:hidden focus:outline-none">
+                <button type="button" id="menu-btn" @click="toggleMobileMenu"
+                    :class="['block', 'hamburger', 'lg:hidden', 'focus:outline-none', { open: isMobileMenuOpen }]">
                     <span class="sr-only">Open main menu</span>
                     <span class="hamburger-top"></span>
                     <span class="hamburger-middle"></span>
@@ -180,7 +181,7 @@
             <!-- Mobile Menu -->
             <div class="lg:hidden" style="z-index: 1">
                 <div id="menu"
-                    class="absolute flex-col hidden self-end py-8 mt-10 items-center space-y-6 font-bold bg-white sm:w-auto sm:self-center left-6 right-6 drop-shadow-md">
+                    :class="['absolute', 'flex-col', 'self-end', 'py-8', 'mt-10', 'items-center', 'space-y-6', 'font-bold', 'bg-white', 'sm:w-auto', 'sm:self-center', 'left-6', 'right-6', 'drop-shadow-md',{ flex: isMobileMenuOpen, hidden: !isMobileMenuOpen }]">
                     <a href="#">Pricing</a>
                     <a href="#">Product</a>
                     <a href="#">About Us</a>
@@ -197,6 +198,7 @@ export default {
     data() {
         return {
             isMenuVisible: false,
+            isMobileMenuOpen: false, // 跟踪移动设备菜单是否打开
         };
     },
     mounted() {
@@ -212,6 +214,9 @@ export default {
             if (this.isMenuVisible && (!this.$refs.menu || !this.$refs.menu.contains(e.target))) {
                 this.isMenuVisible = false;
             }
+        },
+        toggleMobileMenu(e) {
+            this.isMobileMenuOpen = !this.isMobileMenuOpen; // 切换移动设备菜单状态
         },
     },
     beforeDestroy() {

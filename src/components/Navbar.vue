@@ -15,18 +15,18 @@
                 </button>
             </div>
             <div class="hidden lg:flex lg:gap-x-12">
-                <div class="relative">
-                    <button type="button" @click="toggleMenu($event)"
-                        class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue"
+                <div class="relative" v-for="menuItem in menuItems" :key="menuItem.ID">
+                    <a type="button" @click="toggleMenu($event)" :href="menuItem.url"
+                        class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue cursor-pointer"
                         aria-expanded="false">
-                        Product
-                        <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
+                        {{menuItem.title}}
+                        <svg v-if="hasChildren[menuItem.ID]" class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
                             aria-hidden="true">
                             <path fill-rule="evenodd"
                                 d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
                                 clip-rule="evenodd" />
                         </svg>
-                    </button>
+                    </a>
                 </div>
 
                 <!--
@@ -137,7 +137,7 @@
                                 </div>
                                 <div class="flex-auto">
                                     <a href="#" class="block font-semibold text-gray-900">
-                                        Automations
+                                        Automation
                                         <span class="absolute inset-0"></span>
                                     </a>
                                     <p class="mt-1 text-gray-600">
@@ -170,9 +170,9 @@
                         </div>
                     </div>
                 </transition>
-                <a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue">Features</a>
+                <!--a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue">Features</a>
                 <a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue">Blog</a>
-                <a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue">About US</a>
+                <a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue">About US</a-->
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
                 <a href="#" class="text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue">Log in <span
@@ -182,11 +182,7 @@
             <div class="lg:hidden" style="z-index: 1">
                 <div id="menu"
                     :class="['absolute', 'flex-col', 'self-end', 'py-8', 'mt-10', 'items-center', 'space-y-6', 'font-bold', 'bg-white', 'sm:w-auto', 'sm:self-center', 'left-6', 'right-6', 'drop-shadow-md',{ flex: isMobileMenuOpen, hidden: !isMobileMenuOpen }]">
-                    <a href="#">Pricing</a>
-                    <a href="#">Product</a>
-                    <a href="#">About Us</a>
-                    <a href="#">Careers</a>
-                    <a href="#">Community</a>
+                    <a v-for="menuItem in menuItems" :key="menuItem.ID" :href="menuItem.url">{{menuItem.title}}</a>
                 </div>
             </div>
         </nav>
@@ -199,10 +195,29 @@ export default {
         return {
             isMenuVisible: false,
             isMobileMenuOpen: false, // 跟踪移动设备菜单是否打开
+            menuItems: [],
+            hasChildren: {},
         };
     },
     mounted() {
         document.addEventListener('click', this.handleOutsideClick);
+
+        fetch('http://libofei.com/wp-json/techqik/v1/menu/primary')
+            .then(response => response.json())
+            .then(menuItems => {
+                // 使用菜单数据
+                console.log(menuItems);
+                this.menuItems = menuItems;
+                menuItems.forEach(item => {
+                    this.hasChildren[item.ID] = false;
+                });
+                menuItems.forEach(item => {
+                    if (item.menu_item_parent !== "0") {
+                        this.hasChildren[item.menu_item_parent] = true;
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
     },
     methods: {
         toggleMenu(event) {

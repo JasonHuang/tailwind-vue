@@ -1,6 +1,7 @@
 <template>
-    <header class="bg-white shadow-xl">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <header :class="{ 'bg-transparent': !scrolled, 'bg-white shadow-lg': scrolled }"
+        class="shadow-xl fixed top-0 left-0 w-full transition duration-300 z-20">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between p-[1.2em] lg:px-8" aria-label="Global">
             <div class="flex lg:flex-1 justify-between items-center w-full">
                 <a href="#" class="-m-1.5 p-1.5">
                     <span class="sr-only">TechQik Development</span>
@@ -19,9 +20,9 @@
                     <a type="button" @click="toggleMenu($event)" :href="menuItem.url"
                         class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue cursor-pointer"
                         aria-expanded="false">
-                        {{menuItem.title}}
-                        <svg v-if="hasChildren[menuItem.ID]" class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-                            aria-hidden="true">
+                        {{ menuItem.title }}
+                        <svg v-if="hasChildren[menuItem.ID]" class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20"
+                            fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd"
                                 d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
                                 clip-rule="evenodd" />
@@ -181,8 +182,8 @@
             <!-- Mobile Menu -->
             <div class="lg:hidden" style="z-index: 1">
                 <div id="menu"
-                    :class="['absolute', 'flex-col', 'self-end', 'py-8', 'mt-10', 'items-center', 'space-y-6', 'font-bold', 'bg-white', 'sm:w-auto', 'sm:self-center', 'left-6', 'right-6', 'drop-shadow-md',{ flex: isMobileMenuOpen, hidden: !isMobileMenuOpen }]">
-                    <a v-for="menuItem in menuItems" :key="menuItem.ID" :href="menuItem.url">{{menuItem.title}}</a>
+                    :class="['absolute', 'flex-col', 'self-end', 'py-8', 'mt-10', 'items-center', 'space-y-6', 'font-bold', 'bg-white', 'sm:w-auto', 'sm:self-center', 'left-6', 'right-6', 'drop-shadow-md', { flex: isMobileMenuOpen, hidden: !isMobileMenuOpen }]">
+                    <a v-for="menuItem in menuItems" :key="menuItem.ID" :href="menuItem.url">{{ menuItem.title }}</a>
                 </div>
             </div>
         </nav>
@@ -197,16 +198,17 @@ export default {
             isMobileMenuOpen: false, // 跟踪移动设备菜单是否打开
             menuItems: [],
             hasChildren: {},
+            scrolled: false,
         };
     },
     mounted() {
         document.addEventListener('click', this.handleOutsideClick);
+        window.addEventListener('scroll', this.handleScroll);
 
         fetch('http://libofei.com/wp-json/techqik/v1/menu/primary')
             .then(response => response.json())
             .then(menuItems => {
                 // 使用菜单数据
-                console.log(menuItems);
                 this.menuItems = menuItems;
                 menuItems.forEach(item => {
                     this.hasChildren[item.ID] = false;
@@ -218,6 +220,9 @@ export default {
                 });
             })
             .catch(error => console.error('Error:', error));
+    },
+    destroyed() {
+        window.removeEventListener('scroll', this.handleScroll);
     },
     methods: {
         toggleMenu(event) {
@@ -232,6 +237,10 @@ export default {
         },
         toggleMobileMenu(e) {
             this.isMobileMenuOpen = !this.isMobileMenuOpen; // 切换移动设备菜单状态
+        },
+        handleScroll() {
+            this.scrolled = window.scrollY > 0;
+            console.log(window.scrollY);
         },
     },
     beforeDestroy() {
@@ -262,5 +271,4 @@ export default {
 .fade-leave-active {
     transition: opacity 0.15s ease-in, transform 0.15s ease-in;
 }
-
 </style>

@@ -1,7 +1,7 @@
 <template>
     <header :class="{ 'bg-transparent': !scrolled, 'bg-white shadow-lg': scrolled }"
         class="shadow-xl fixed top-0 left-0 w-full transition duration-300 z-20">
-        <nav class="mx-auto flex max-w-7xl items-center justify-between p-[1.2em] lg:px-8" aria-label="Global">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between p-[1.2em] lg:px-8 " aria-label="Global">
             <div class="flex lg:flex-1 justify-between items-center w-full">
                 <a href="#" class="-m-1.5 p-1.5">
                     <span class="sr-only">TechQik Development</span>
@@ -15,7 +15,7 @@
                     <span class="hamburger-bottom"></span>
                 </button>
             </div>
-            <div class="hidden lg:flex lg:gap-x-12">
+            <div class="hidden lg:flex lg:gap-x-12 ml-52">
                 <div class="relative" v-for="menuItem in menuItems" :key="menuItem.ID">
                     <a type="button" @click="toggleMenu($event)" :href="menuItem.url"
                         class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 hover:text-darkGrayishBlue cursor-pointer"
@@ -205,7 +205,8 @@ export default {
         document.addEventListener('click', this.handleOutsideClick);
         window.addEventListener('scroll', this.handleScroll);
 
-        fetch('http://libofei.com/wp-json/techqik/v1/menu/primary')
+        // fetch('http://libofei.com/wp-json/techqik/v1/menu/primary' + '? t=${new Date().getTime()}')
+        fetch(this.$urlWrap('http://libofei.com/wp-json/techqik/v1/menu/primary'))
             .then(response => response.json())
             .then(menuItems => {
                 // 使用菜单数据

@@ -7,7 +7,8 @@ import App from './App.vue'
 const app = createApp(App);
 
 app.config.globalProperties.$urlWrap = function (url) {
-  return url + "?t=" + new Date().getTime();
+    const separator = url.includes("?") ? "&" : "?";
+    return url + separator + "t=" + new Date().getTime();
 };
 
 app.mount('#app');

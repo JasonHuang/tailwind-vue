@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <div class="mx-auto h-[600px] relative shadow-xl bg-[url('../assets/banner.jpg')] bg-cover bg-no-repeat bg-center">
+    <div class="mx-auto h-[600px] relative shadow-xl bg-[url('../assets/banner.jpg')] bg-cover bg-no-repeat bg-center mt-[66.38px]">
         <div class="inset-0 w-full h-full relative"></div>
         <div class="absolute inset-0 bg-black opacity-50"></div>
         <div class="absolute inset-0 flex flex-row">

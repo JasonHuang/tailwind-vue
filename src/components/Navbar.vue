@@ -1,6 +1,6 @@
 <template>
-    <header :class="{ 'bg-transparent': !scrolled, 'bg-white shadow-lg': scrolled }"
-        class="shadow-xl fixed top-0 left-0 w-full transition duration-300 z-20">
+    <header 
+        class="fixed bg-white shadow-lg top-0 left-0 w-full transition duration-300 z-20">
         <nav class="mx-auto flex max-w-7xl items-center justify-between p-[1.2em] lg:px-8 " aria-label="Global">
             <div class="flex lg:flex-1 justify-between items-center w-full">
                 <a href="#" class="-m-1.5 p-1.5">
@@ -76,7 +76,7 @@ interface MenuItem {
     ID: number;
     title: string;
     url: string;
-    menu_item_parent: number;
+    menu_item_parent: string;
     menu_order: number;
     isMenuVisible: boolean;
     children: MenuItem[];
@@ -88,7 +88,7 @@ interface ApiResponse {
 
 const isMobileMenuOpen = ref(false);
 const topLevelMenuItems = ref<MenuItem[]>([]);
-const scrolled = ref(false);
+// const scrolled = ref(false);
 
 const fetchMenuItems = async () => {
     try {
@@ -101,25 +101,26 @@ const fetchMenuItems = async () => {
 };
 
 const constructMenu = (menuItems: MenuItem[]) => {
-    const menuStructure: Record<number, MenuItem> = {};
-    menuItems.forEach(item=> menuStructure[item.ID] = { ...item, children: [] });
-    menuItems.forEach(item=> {
-        if (item.menu_item_parent !== 0) {
+    const menuStructure: Record<string, MenuItem> = {};
+    menuItems.forEach(item => menuStructure[item.ID] = { ...item, children: [] });
+    menuItems.forEach(item => {
+        if (item.menu_item_parent !== "0") {
             menuStructure[item.menu_item_parent].children.push(menuStructure[item.ID]);
         }
     });
-    return Object.values(menuStructure).filter((item: MenuItem) => item.menu_item_parent === 0).sort((a: MenuItem, b: MenuItem) => a.menu_order - b.menu_order);
+    return Object.values(menuStructure).filter((item: MenuItem) => item.menu_item_parent === "0").sort((a: MenuItem, b: MenuItem) => a.menu_order - b.menu_order);
 };
 
-const handleScroll = () => {
-    scrolled.value = window.scrollY > 0;
-};
+// const handleScroll = () => {
+//     scrolled.value = window.scrollY > 0;
+//     console.log(scrolled.value);
+// };
 
 const getMenuRef = (itemID: number) => `menu-${itemID}`;
 
-const handleOutsideClick = (e : MouseEvent) => {
+const handleOutsideClick = (e: MouseEvent) => {
     topLevelMenuItems.value.forEach(menuItem => {
-        const menuRef  = getMenuRef(menuItem.ID);
+        const menuRef = getMenuRef(menuItem.ID);
         if (menuRef) {
             const menuElement = document.getElementById(menuRef);
             if (menuElement && !menuElement.contains(e.target as Node)) {
@@ -146,13 +147,13 @@ const toggleMobileMenu = () => {
 
 onMounted(() => {
     document.addEventListener('click', handleOutsideClick);
-    window.addEventListener('scroll', handleScroll);
+    // window.addEventListener('scroll', handleScroll);
     fetchMenuItems();
 });
 
 onUnmounted(() => {
     document.removeEventListener('click', handleOutsideClick);
-    window.removeEventListener('scroll', handleScroll);
+    // window.removeEventListener('scroll', handleScroll);
 });
 </script>
 

@@ -556,6 +556,10 @@ video {
   border-width: 0;
 }
 
+.static {
+  position: static;
+}
+
 .fixed {
   position: fixed;
 }
@@ -641,6 +645,10 @@ video {
 
 .mt-3 {
   margin-top: 0.75rem;
+}
+
+.mt-\[66\.38px\] {
+  margin-top: 66.38px;
 }
 
 .block {
@@ -1055,11 +1063,6 @@ video {
 .text-gray-900 {
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
-}
-
-.text-red-500 {
-  --tw-text-opacity: 1;
-  color: rgb(239 68 68 / var(--tw-text-opacity));
 }
 
 .text-white {

@@ -1,6 +1,11 @@
 {
-  "compilerOptions": {
-    "lib": ["ES2015","DOM","esnext"]
-  }
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ]
 }
-

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { truncateText,urlWrap } from '@/utils/utils';
 
 interface MediaItem {
     ID: number;
@@ -31,18 +32,18 @@ async function fetchItems() {
     }
 }
 
-async function getMedia(item: MediaItem): Promise<string | null> {
+async function getMedia(item: MediaItem): Promise<string | undefined> {
     if (item.featured_media === 0) {
-        return null;
+        return undefined;
     }
     const response = await fetch(`http://libofei.com/wp-json/wp/v2/media/${item.featured_media}`);
     const media = await response.json() as MediaItem;
     return media.source_url;
 }
 
-const truncateText = (text: string, maxLength: number): string => {
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-};
+// const truncateText = (text: string, maxLength: number): string => {
+//     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+// };
 
 onMounted(fetchItems);
 </script>

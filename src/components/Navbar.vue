@@ -69,132 +69,69 @@
         </nav>
     </header>
 </template>
-
-<script>
-// export default {
-//     data() {
-//         return {
-//             isMobileMenuOpen: false,
-//             topLevelMenuItems: [],
-//             scrolled: false,
-//         };
-//     },
-//     mounted() {
-//         document.addEventListener('click', this.handleOutsideClick);
-//         window.addEventListener('scroll', this.handleScroll);
-
-//         fetch(this.$urlWrap('http://libofei.com/wp-json/techqik/v1/menu/primary'))
-//             .then(response => response.json())
-//             .then(menuItems => {
-//                 this.topLevelMenuItems = this.constructMenu(menuItems);
-//             })
-//             .catch(error => console.error('Error:', error));
-//     },
-//     destroyed() {
-//         window.removeEventListener('scroll', this.handleScroll);
-//     },
-//     methods: {
-//         toggleMenu(menuItem, e) {
-//             // Toggle visibility of the submenu
-//             menuItem.isMenuVisible = !menuItem.isMenuVisible;
-
-//             // Close other submenus
-//             this.topLevelMenuItems.forEach(item => {
-//                 if (item.ID !== menuItem.ID) {
-//                     item.isMenuVisible = false;
-//                 }
-//             });
-//             e.stopPropagation();
-//         },
-//         getMenuRef(menuItem) {
-//             return 'menu-${menuItem.ID}';
-//         },
-//         handleOutsideClick(e) {
-//             this.topLevelMenuItems.forEach(menuItem => {
-//                 const menuRefs = this.$refs[this.getMenuRef(menuItem.ID)];
-//                 if (menuRefs) {
-//                     // Since menuRefs is an array, check if any ref contains the click target
-//                     const isClickOutside = menuRefs.every(ref => !ref.contains(e.target));
-//                     if (isClickOutside) {
-//                         menuItem.isMenuVisible = false;
-//                     }
-//                 }
-//             });
-//         },
-//         toggleMobileMenu(e) {
-//             this.isMobileMenuOpen = !this.isMobileMenuOpen;
-//         },
-//         handleScroll() {
-//             this.scrolled = window.scrollY > 0;
-//         },
-//         constructMenu(menuItems) {
-//             const menuStructure = {};
-//             menuItems.forEach(item => menuStructure[item.ID] = { ...item, children: [] });
-//             menuItems.forEach(item => {
-//                 if (item.menu_item_parent !== "0") {
-//                     menuStructure[item.menu_item_parent].children.push(menuStructure[item.ID]);
-//                 }
-//             });
-//             return Object.values(menuStructure).filter(item => item.menu_item_parent === "0").sort((a, b) => a.menu_order - b.menu_order);
-//         }
-//     },
-//     beforeDestroy() {
-//         document.removeEventListener('click', this.handleOutsideClick);
-//     },
-// };
-</script>
-
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 
+interface MenuItem {
+    ID: number;
+    title: string;
+    url: string;
+    menu_item_parent: number;
+    menu_order: number;
+    isMenuVisible: boolean;
+    children: MenuItem[];
+}
+
+interface ApiResponse {
+    [key: string]: any;
+}
+
 const isMobileMenuOpen = ref(false);
-const topLevelMenuItems = ref([]);
+const topLevelMenuItems = ref<MenuItem[]>([]);
 const scrolled = ref(false);
 
 const fetchMenuItems = async () => {
     try {
         const response = await fetch('http://libofei.com/wp-json/techqik/v1/menu/primary');
-        const data = await response.json();
-        topLevelMenuItems.value = constructMenu(data);
+        const data: ApiResponse[] = await response.json();
+        topLevelMenuItems.value = constructMenu(data as MenuItem[]);
     } catch (error) {
         console.error('Error:', error);
     }
 };
 
-const constructMenu = (menuItems) => {
-    const menuStructure = {};
-    menuItems.forEach(item => menuStructure[item.ID] = { ...item, children: [] });
-    menuItems.forEach(item => {
-        if (item.menu_item_parent !== "0") {
+const constructMenu = (menuItems: MenuItem[]) => {
+    const menuStructure: Record<number, MenuItem> = {};
+    menuItems.forEach(item=> menuStructure[item.ID] = { ...item, children: [] });
+    menuItems.forEach(item=> {
+        if (item.menu_item_parent !== 0) {
             menuStructure[item.menu_item_parent].children.push(menuStructure[item.ID]);
         }
     });
-    return Object.values(menuStructure).filter(item => item.menu_item_parent === "0").sort((a, b) => a.menu_order - b.menu_order);
+    return Object.values(menuStructure).filter((item: MenuItem) => item.menu_item_parent === 0).sort((a: MenuItem, b: MenuItem) => a.menu_order - b.menu_order);
 };
 
 const handleScroll = () => {
     scrolled.value = window.scrollY > 0;
 };
 
-const getMenuRef = (menuItem) => 'menu-${menuItem.ID}';
+const getMenuRef = (itemID: number) => `menu-${itemID}`;
 
-const handleOutsideClick = (e) => {
+const handleOutsideClick = (e : MouseEvent) => {
     topLevelMenuItems.value.forEach(menuItem => {
         const menuRef  = getMenuRef(menuItem.ID);
         if (menuRef) {
             const menuElement = document.getElementById(menuRef);
-            if (menuElement && !menuElement.contains(e.target)) {
+            if (menuElement && !menuElement.contains(e.target as Node)) {
                 menuItem.isMenuVisible = false;
             }
         }
     });
 };
 
-const toggleMenu = (menuItem, e) => {
-    // Toggle visibility of the submenu
+const toggleMenu = (menuItem: MenuItem, e: MouseEvent) => {
     menuItem.isMenuVisible = !menuItem.isMenuVisible;
 
-    // Close other submenus
     topLevelMenuItems.value.forEach(item => {
         if (item.ID !== menuItem.ID) {
             item.isMenuVisible = false;
@@ -203,6 +140,9 @@ const toggleMenu = (menuItem, e) => {
     e.stopPropagation();
 };
 
+const toggleMobileMenu = () => {
+    isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
 
 onMounted(() => {
     document.addEventListener('click', handleOutsideClick);

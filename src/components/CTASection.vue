@@ -1,44 +1,52 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
-const items = ref([]);
+
+interface MediaItem {
+    ID: number;
+    featured_media: number;
+    source_url: string;
+    title: {
+        rendered: string;
+    };
+    excerpt: {
+        rendered: string;
+    };
+    link: string;
+    image_url?: string;
+}
+
+const items = ref<MediaItem[]>([]);
 
 async function fetchItems() {
     try {
-        const response = await fetch('http://libofei.com/wp-json/wp/v2/posts?categories=20&per_page=3');
-        const data = await response.json();
+
+        const response = await fetch(`http://libofei.com/wp-json/wp/v2/posts?categories=20&per_page=3`);
+        const data: MediaItem[] = await response.json() as MediaItem[];
         for (const item of data) {
             item.image_url = await getMedia(item);
-            console.log(item.image_url);
         }
         items.value = data;
-        console.log(items.value);
-        // const mediaFetchPromises = data.map(async (item) => {
-        //     item.image_url = await getMedia(item);
-        //     return item;
-        // });
-
-        // items.value = await Promise.all(mediaFetchPromises);
     } catch (error) {
         console.error('Error:', error);
     }
-    console.log(items.value);
 }
 
-async function getMedia(item) {
+async function getMedia(item: MediaItem): Promise<string | null> {
     if (item.featured_media === 0) {
-        return null; // 或者返回默认图片的URL
+        return null;
     }
-    const response = await fetch('http://libofei.com/wp-json/wp/v2/media/' + item.featured_media);
-    const media = await response.json();
+    const response = await fetch(`http://libofei.com/wp-json/wp/v2/media/${item.featured_media}`);
+    const media = await response.json() as MediaItem;
     return media.source_url;
 }
 
-const truncateText = (text, maxLength) => {
+const truncateText = (text: string, maxLength: number): string => {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
 };
 
 onMounted(fetchItems);
 </script>
+
 
 <template>
     <!-- Cards -->
@@ -54,17 +62,15 @@ onMounted(fetchItems);
                         <a :href="item.link" class="hover:text-darkGrayishBlue">
 
                             <div class="bg-no-repeat bg-cover w-40 h-40 rounded-full"
-                                :style="['background-image:url(' + item.image_url + ')']">
+                                :style="`background-image:url('${item.image_url}')`">
                             </div>
                         </a>
                         <a :href="item.link" class="hover:text-darkGrayishBlue">
-
                             <h1 class="text-2xl font-bold font-nunito text-center">
                                 {{ truncateText(item.title.rendered, 20) }}
                             </h1>
                         </a>
-                        <a :href="item.link" class="hover:text-darkGrayishBlue">
-
+                        <a :href="item.link" class="hover:text-darkGrayishBlue hover:underline">
                             <p class="text-center" v-html="truncateText(item.excerpt.rendered, 100)">
 
                             </p>

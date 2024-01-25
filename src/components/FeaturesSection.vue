@@ -16,7 +16,7 @@
                         <a :href="item.link" class="hover:text-darkGrayishBlue">
                             <h1 class="text-3xl font-nunito font-bold">{{ item.title.rendered }}</h1>
                         </a>
-                        <a :href="item.link" class="hover:text-darkGrayishBlue">
+                        <a :href="item.link" class="hover:text-darkGrayishBlue hover:underline">
                             <p class="w-full text-base font-nunito pr-10" v-html="item.excerpt.rendered">
                             </p>
                         </a>

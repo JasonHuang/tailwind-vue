@@ -556,10 +556,6 @@ video {
   border-width: 0;
 }
 
-.static {
-  position: static;
-}
-
 .fixed {
   position: fixed;
 }
@@ -912,13 +908,17 @@ video {
   background-color: rgb(31 41 55 / var(--tw-bg-opacity));
 }
 
-.bg-transparent {
-  background-color: transparent;
-}
-
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.bg-\[url\(\'\/images\/hero\.jpg\'\)\] {
+  background-image: url('/images/hero.jpg');
+}
+
+.bg-\[url\(\'\/assets\/banner\.jpg\'\)\] {
+  background-image: url('/assets/banner.jpg');
 }
 
 .bg-\[url\(\'\.\.\/assets\/banner\.jpg\'\)\] {
@@ -1154,7 +1154,7 @@ video {
 }
 
 body {
-  background-image: url('./images/bg-tablet-pattern.svg');
+  /* background-image: url('./images/bg-tablet-pattern.svg'); */
   background-repeat: no-repeat;
   background-size: 800px;
   background-position: 90% -25%;

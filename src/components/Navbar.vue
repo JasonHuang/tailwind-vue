@@ -1,6 +1,6 @@
 <template>
-    <header 
-        class="fixed bg-white shadow-lg top-0 left-0 w-full transition duration-300 z-20">
+    <header :style="{ top: navbarOffset + 'px' }"
+        class="fixed bg-white shadow-lg left-0 w-full transition duration-300 z-20">
         <nav class="mx-auto flex max-w-7xl items-center justify-between p-[1.2em] lg:px-8 " aria-label="Global">
             <div class="flex lg:flex-1 justify-between items-center w-full">
                 <a href="#" class="-m-1.5 p-1.5">
@@ -71,50 +71,25 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import type { MenuItem } from '@/utils/menu';
+import { fetchMenuItems } from '@/utils/menu';
 
-interface MenuItem {
-    ID: number;
-    title: string;
-    url: string;
-    menu_item_parent: string;
-    menu_order: number;
-    isMenuVisible: boolean;
-    children: MenuItem[];
-}
-
-interface ApiResponse {
-    [key: string]: any;
-}
+const navbarOffset = ref<number>(0);
 
 const isMobileMenuOpen = ref(false);
 const topLevelMenuItems = ref<MenuItem[]>([]);
-// const scrolled = ref(false);
 
-const fetchMenuItems = async () => {
-    try {
-        const response = await fetch('http://libofei.com/wp-json/techqik/v1/menu/primary');
-        const data: ApiResponse[] = await response.json();
-        topLevelMenuItems.value = constructMenu(data as MenuItem[]);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
-
-const constructMenu = (menuItems: MenuItem[]) => {
-    const menuStructure: Record<string, MenuItem> = {};
-    menuItems.forEach(item => menuStructure[item.ID] = { ...item, children: [] });
-    menuItems.forEach(item => {
-        if (item.menu_item_parent !== "0") {
-            menuStructure[item.menu_item_parent].children.push(menuStructure[item.ID]);
+const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+        if (mutation.addedNodes) {
+            const wpAdminBar = document.getElementById('wpadminbar');
+            if (wpAdminBar) {
+                navbarOffset.value = wpAdminBar.offsetHeight;
+                observer.disconnect();
+            }
         }
     });
-    return Object.values(menuStructure).filter((item: MenuItem) => item.menu_item_parent === "0").sort((a: MenuItem, b: MenuItem) => a.menu_order - b.menu_order);
-};
-
-// const handleScroll = () => {
-//     scrolled.value = window.scrollY > 0;
-//     console.log(scrolled.value);
-// };
+});
 
 const getMenuRef = (itemID: number) => `menu-${itemID}`;
 
@@ -147,13 +122,17 @@ const toggleMobileMenu = () => {
 
 onMounted(() => {
     document.addEventListener('click', handleOutsideClick);
-    // window.addEventListener('scroll', handleScroll);
-    fetchMenuItems();
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    (async () => {
+        topLevelMenuItems.value = await fetchMenuItems('primary');
+    })();
+
 });
 
 onUnmounted(() => {
     document.removeEventListener('click', handleOutsideClick);
-    // window.removeEventListener('scroll', handleScroll);
+    observer.disconnect();
 });
 </script>
 

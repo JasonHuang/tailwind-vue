@@ -769,6 +769,10 @@ video {
   cursor: pointer;
 }
 
+.resize {
+  resize: both;
+}
+
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
@@ -911,18 +915,6 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-\[url\(\'\/images\/hero\.jpg\'\)\] {
-  background-image: url('/images/hero.jpg');
-}
-
-.bg-\[url\(\'\/assets\/banner\.jpg\'\)\] {
-  background-image: url('/assets/banner.jpg');
-}
-
-.bg-\[url\(\'\.\.\/assets\/banner\.jpg\'\)\] {
-  background-image: url('../assets/banner.jpg');
 }
 
 .bg-cover {
